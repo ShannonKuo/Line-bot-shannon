@@ -55,8 +55,63 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     text = event.message.text
+    if text == '天蠍':
+        buttons_template = ButtonsTemplate(
+            title='您今天的運勢', text='以下是您的運勢', actions=[
+                MessageTemplateAction(label='整體運勢', text='我想看整體運勢'),
+                MessageTemplateAction(label='愛情運勢', text='我想看愛情運勢'),
+                MessageTemplateAction(label='事業學業運勢', text='我想看事業學業運勢'),
+                MessageTemplateAction(label='財運運勢', text='我想看財運運勢'),
+            ])
+        template_message = TemplateSendMessage(
+            alt_text='您今天的運勢', template=buttons_template)
+        line_bot_api.reply_message(event.reply_token, template_message)
 
-    if text == 'profile':
+    elif text.find('整體運勢') != -1:
+        line_bot_api.reply_message(
+            event.reply_token, [
+                TextSendMessage(
+                    text='您今天的整體運勢是 五顆星'
+                ),
+                TextSendMessage(
+                    text='內容'
+                )
+            ]
+        )
+    elif text.find('愛情運勢') != -1:
+        line_bot_api.reply_message(
+            event.reply_token, [
+                TextSendMessage(
+                    text='您今天的愛情運勢是 五顆星'
+                ),
+                TextSendMessage(
+                    text='內容'
+                )
+            ]
+        )
+    elif text.find('事業學業運勢') != -1:
+        line_bot_api.reply_message(
+            event.reply_token, [
+                TextSendMessage(
+                    text='您今天的事業學業運勢是 五顆星'
+                ),
+                TextSendMessage(
+                    text='內容'
+                )
+            ]
+        )
+    elif text.find('財運運勢') != -1:
+        line_bot_api.reply_message(
+            event.reply_token, [
+                TextSendMessage(
+                    text='您今天的財運運勢是 五顆星'
+                ),
+                TextSendMessage(
+                    text='內容'
+                )
+            ]
+        )
+    elif text == 'profile':
         if isinstance(event.source, SourceUser):
             profile = line_bot_api.get_profile(event.source.user_id)
             line_bot_api.reply_message(
@@ -147,11 +202,15 @@ def handle_message(event):
         line_bot_api.reply_message(event.reply_token, image_message)
     elif text == 'imagemap':
         pass
+
     else:
         line_bot_api.reply_message(
-            event.reply_token, TextSendMessage(text=event.message.text))
-
- 
+            event.reply_token, [
+                TextSendMessage(
+                    text='不好意思，我聽不太懂耶'
+                )
+            ]
+        )
 
 @handler.add(MessageEvent, message=StickerMessage)
 def handle_sticker_message(event):
@@ -161,6 +220,28 @@ def handle_sticker_message(event):
             package_id='4',
             sticker_id='632')
     )
+def handle_ask_zodiac_sign(event):
+    if text == '好':
+        line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(
+                    text="那你可以給我你的星座嗎？"
+                )
+        )
+    elif text == '不好':
+        line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(
+                    text="嗚嗚好吧～那我們明天見囉"
+                )
+        )
+    else:
+        line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(
+                    text="對不起，我聽不太懂耶\n 如果想看運勢的話請回 好 "
+                )
+        )
 
 import os
 if __name__ == "__main__":
