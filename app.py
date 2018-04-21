@@ -4,6 +4,7 @@ import errno
 import os
 import sys
 import tempfile
+import random
 from parse_zodiac_sign import parse_zodiac
 
 from argparse import ArgumentParser
@@ -93,19 +94,20 @@ def handle_message(event):
             )
             return
     
-    if text == '不想':
+    if text.find('不想') != -1:
         line_bot_api.reply_message(
                 event.reply_token, [
                     TextSendMessage(
                         text = '嗚嗚好吧～那我們明天見Q'
-                    )
+                    ),
+                    ImageSendMessage(
+                        original_content_url='https://image.ibb.co/jhADSS/13132732.jpg',
+                        preview_image_url='https://image.ibb.co/jhADSS/13132732.jpg'
+                    )  
                 ]
-                image_message = ImageSendMessage(
-                    original_content_url='https://image.ibb.co/jhADSS/13132732.jpg',
-                    preview_image_url='https://image.ibb.co/jhADSS/13132732.jpg'
-                )  
+                
             )
-    elif text == '想':
+    elif text.find('想') != -1:
         line_bot_api.reply_message(
                 event.reply_token, [
                     TextSendMessage(
@@ -113,99 +115,6 @@ def handle_message(event):
                     )
                 ]
             )
-    elif text == 'profile':
-        if isinstance(event.source, SourceUser):
-            profile = line_bot_api.get_profile(event.source.user_id)
-            line_bot_api.reply_message(
-                event.reply_token, [
-                    TextSendMessage(
-                        text='Display name: ' + profile.display_name
-                    ),
-                    TextSendMessage(
-                        text='Status message: ' + profile.status_message
-                    )
-                ]
-            )
-        else:
-            line_bot_api.reply_message(
-                event.reply_token,
-                TextMessage(text="Bot can't use profile API without user ID"))
-    elif text == 'bye':
-        if isinstance(event.source, SourceGroup):
-            line_bot_api.reply_message(
-                event.reply_token, TextMessage(text='Leaving group'))
-            line_bot_api.leave_group(event.source.group_id)
-        elif isinstance(event.source, SourceRoom):
-            line_bot_api.reply_message(
-                event.reply_token, TextMessage(text='Leaving group'))
-            line_bot_api.leave_room(event.source.room_id)
-        else:
-            line_bot_api.reply_message(
-                event.reply_token,
-                TextMessage(text="Bot can't leave from 1:1 chat"))
-    elif text == 'confirm':
-        confirm_template = ConfirmTemplate(text='Do it?', actions=[
-            MessageTemplateAction(label='Yes', text='Yes!'),
-            MessageTemplateAction(label='No', text='No!'),
-        ])
-        template_message = TemplateSendMessage(
-            alt_text='Confirm alt text', template=confirm_template)
-        line_bot_api.reply_message(event.reply_token, template_message)
-    elif text == 'buttons':
-        buttons_template = ButtonsTemplate(
-            title='My buttons sample', text='Hello, my buttons', actions=[
-                URITemplateAction(
-                    label='Go to line.me', uri='https://line.me'),
-                PostbackTemplateAction(label='ping', data='ping'),
-                PostbackTemplateAction(
-                    label='ping with text', data='ping',
-                    text='ping'),
-                MessageTemplateAction(label='Translate Rice', text='米')
-            ])
-        template_message = TemplateSendMessage(
-            alt_text='Buttons alt text', template=buttons_template)
-        line_bot_api.reply_message(event.reply_token, template_message)
-    elif text == 'carousel':
-        carousel_template = CarouselTemplate(columns=[
-            CarouselColumn(text='hoge1', title='fuga1', actions=[
-                URITemplateAction(
-                    label='Go to line.me', uri='https://line.me'),
-                PostbackTemplateAction(label='ping', data='ping')
-            ]),
-            CarouselColumn(text='hoge2', title='fuga2', actions=[
-                PostbackTemplateAction(
-                    label='ping with text', data='ping',
-                    text='ping'),
-                MessageTemplateAction(label='Translate Rice', text='米')
-            ]),
-        ])
-        template_message = TemplateSendMessage(
-            alt_text='Carousel alt text', template=carousel_template)
-        line_bot_api.reply_message(event.reply_token, template_message)
-    elif text == 'image_carousel':
-        image_carousel_template = ImageCarouselTemplate(columns=[
-            ImageCarouselColumn(image_url='https://images.pexels.com/photos/370799/pexels-photo-370799.jpeg?auto=compress&cs=tinysrgb&h=350',
-                                action=DatetimePickerTemplateAction(label='datetime',
-                                                                    data='datetime_postback',
-                                                                    mode='datetime')),
-            ImageCarouselColumn(image_url='https://via.placeholder.com/1024x1024',
-                                action=DatetimePickerTemplateAction(label='date',
-                                                                    data='date_postback',
-                                                                    mode='date'))
-        ])
-        template_message = TemplateSendMessage(
-            alt_text='ImageCarousel alt text', template=image_carousel_template)
-        line_bot_api.reply_message(event.reply_token, template_message)
-    elif text == 'image':
-        message = TextSendMessage(text="太棒了～祝你一整天順利呦")
-        image_message = ImageSendMessage(
-            original_content_url='https://images.pexels.com/photos/370799/pexels-photo-370799.jpeg?auto=compress&cs=tinysrgb&h=350',
-            preview_image_url='https://images.pexels.com/photos/370799/pexels-photo-370799.jpeg?auto=compress&cs=tinysrgb&h=350'
-        )   
-        line_bot_api.reply_message(event.reply_token, [message, image_message])
-    elif text == 'imagemap':
-        pass
-
     else:
         line_bot_api.reply_message(
             event.reply_token, [
@@ -215,36 +124,17 @@ def handle_message(event):
             ]
         )
 
+
 @handler.add(MessageEvent, message=StickerMessage)
 def handle_sticker_message(event):
+    random_num = random.randint(180, 259)
     line_bot_api.reply_message(
         event.reply_token,
         StickerSendMessage(
-            package_id='4',
-            sticker_id='632')
+            package_id='3',
+            sticker_id=str(random_num))
     )
-def handle_ask_zodiac_sign(event):
-    if text == '好':
-        line_bot_api.reply_message(
-                event.reply_token,
-                TextSendMessage(
-                    text="那你可以給我你的星座嗎？"
-                )
-        )
-    elif text == '不好':
-        line_bot_api.reply_message(
-                event.reply_token,
-                TextSendMessage(
-                    text="嗚嗚好吧～那我們明天見囉"
-                )
-        )
-    else:
-        line_bot_api.reply_message(
-                event.reply_token,
-                TextSendMessage(
-                    text="對不起，我聽不太懂耶\n 如果想看運勢的話請回 好 "
-                )
-        )
+
 def get_feedback(stars):
     if stars.find('★★★★★') != -1:
         message = TextSendMessage(text="太棒了～祝你一整天順利呦")
