@@ -63,7 +63,7 @@ def handle_message(event):
         if text.find(sign) != -1:
             parse_result = zodiac.constellation(i) 
             buttons_template = ButtonsTemplate(
-                title='您今天的運勢:', text='以下是您的運勢', actions=[
+                title='您今天的運勢:', text='點選按鈕就可以看了喔<3', actions=[
                     MessageTemplateAction(label='整體運勢', text='我想看整體運勢'),
                     MessageTemplateAction(label='愛情運勢', text='我想看愛情運勢'),
                     MessageTemplateAction(label='事業學業運勢', text='我想看事業學業運勢'),
@@ -92,41 +92,28 @@ def handle_message(event):
                 ]
             )
             return
-    """elif text.find('愛情運勢') != -1:
+    
+    if text == '不想':
         line_bot_api.reply_message(
-            event.reply_token, [
-                TextSendMessage(
-                    text=zodiac.result['love']
-                ),
-                TextSendMessage(
-                    text=zodiac.result['love_cont']
-                )
-            ]
-        )
-    elif text.find('事業學業運勢') != -1:
+                event.reply_token, [
+                    TextSendMessage(
+                        text = '嗚嗚好吧～那我們明天見Q'
+                    )
+                ]
+                image_message = ImageSendMessage(
+                    original_content_url='https://image.ibb.co/jhADSS/13132732.jpg',
+                    preview_image_url='https://image.ibb.co/jhADSS/13132732.jpg'
+                )  
+            )
+    elif text == '想':
         line_bot_api.reply_message(
-            event.reply_token, [
-                TextSendMessage(
-                    text=zodiac.result['work']
-                ),
-                TextSendMessage(
-                    text=zodiac.result['work_cont']
-                )
-            ]
-        )
-    elif text.find('財運運勢') != -1:
-        line_bot_api.reply_message(
-            event.reply_token, [
-                TextSendMessage(
-                    text=zodiac.result['wealth']
-                ),
-                TextSendMessage(
-                    text=zodiac.result['wealth_cont']
-                )
-            ]
-        )
-    """
-    if text == 'profile':
+                event.reply_token, [
+                    TextSendMessage(
+                        text = '想看的話只要輸入星座就可以查看了喔！ \n ex: 天蠍座'
+                    )
+                ]
+            )
+    elif text == 'profile':
         if isinstance(event.source, SourceUser):
             profile = line_bot_api.get_profile(event.source.user_id)
             line_bot_api.reply_message(
