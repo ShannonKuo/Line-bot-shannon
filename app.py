@@ -4,6 +4,8 @@ import errno
 import os
 import sys
 import tempfile
+from parse_zodiac_sign import parse_zodiac
+
 from argparse import ArgumentParser
 
 from flask import Flask, request, abort
@@ -32,6 +34,7 @@ app = Flask(__name__)
 line_bot_api = LineBotApi('Cl3jVd/y4GpkqurC/63xKqWYGWx9vtYMLArtyALsRUquhUyUS/jHaXif1Ua2XbfOJG197JBfdx3VesvwjCpQQeEsqTSfNmZOZPmnkViegy8zVxN6O9FSKrcNXqyrqsvTKlgTvZzoQkHd08pLyBs1QAdB04t89/1O/w1cDnyilFU=')
 # Channel Secret
 handler = WebhookHandler('f787f1305680c20fc61c962950fcfefd')
+zodiac_signs = ['牡羊', '金牛', '雙子', '巨蟹', '獅子', '處女', '天秤', '天蠍', '射手', '摩羯', '水瓶', '雙魚']
 
 # 監聽所有來自 /callback 的 Post Request
 @app.route("/callback", methods=['POST'])
@@ -55,37 +58,45 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     text = event.message.text
-    if text == '天蠍':
-        buttons_template = ButtonsTemplate(
-            title='您今天的運勢', text='以下是您的運勢', actions=[
-                MessageTemplateAction(label='整體運勢', text='我想看整體運勢'),
-                MessageTemplateAction(label='愛情運勢', text='我想看愛情運勢'),
-                MessageTemplateAction(label='事業學業運勢', text='我想看事業學業運勢'),
-                MessageTemplateAction(label='財運運勢', text='我想看財運運勢'),
-            ])
-        template_message = TemplateSendMessage(
-            alt_text='您今天的運勢', template=buttons_template)
-        line_bot_api.reply_message(event.reply_token, template_message)
+    
+    for i, sign in enumerate(zodiac_signs):
+        if text.find(sign) != -1:
+            parse_result = zodiac.constellation(i) 
+            buttons_template = ButtonsTemplate(
+                title='您今天的運勢:', text='以下是您的運勢', actions=[
+                    MessageTemplateAction(label='整體運勢', text='我想看整體運勢'),
+                    MessageTemplateAction(label='愛情運勢', text='我想看愛情運勢'),
+                    MessageTemplateAction(label='事業學業運勢', text='我想看事業學業運勢'),
+                    MessageTemplateAction(label='財運運勢', text='我想看財運運勢'),
+                ])
+            template_message = TemplateSendMessage(
+                alt_text='您今天的運勢', template=buttons_template)
+            line_bot_api.reply_message(event.reply_token, template_message)
+            
+            return
 
-    elif text.find('整體運勢') != -1:
+    
+    if text.find('整體運勢') != -1:
+        feedback = get_feedback(zodiac.result['overview'])
         line_bot_api.reply_message(
             event.reply_token, [
                 TextSendMessage(
-                    text='您今天的整體運勢是 五顆星'
+                    text = zodiac.result['overview']
                 ),
                 TextSendMessage(
-                    text='內容'
-                )
+                    text=zodiac.result['overview_cont']
+                ),
+                feedback
             ]
         )
     elif text.find('愛情運勢') != -1:
         line_bot_api.reply_message(
             event.reply_token, [
                 TextSendMessage(
-                    text='您今天的愛情運勢是 五顆星'
+                    text=zodiac.result['love']
                 ),
                 TextSendMessage(
-                    text='內容'
+                    text=zodiac.result['love_cont']
                 )
             ]
         )
@@ -93,10 +104,10 @@ def handle_message(event):
         line_bot_api.reply_message(
             event.reply_token, [
                 TextSendMessage(
-                    text='您今天的事業學業運勢是 五顆星'
+                    text=zodiac.result['work']
                 ),
                 TextSendMessage(
-                    text='內容'
+                    text=zodiac.result['work_cont']
                 )
             ]
         )
@@ -104,10 +115,10 @@ def handle_message(event):
         line_bot_api.reply_message(
             event.reply_token, [
                 TextSendMessage(
-                    text='您今天的財運運勢是 五顆星'
+                    text=zodiac.result['wealth']
                 ),
                 TextSendMessage(
-                    text='內容'
+                    text=zodiac.result['wealth_cont']
                 )
             ]
         )
@@ -207,7 +218,7 @@ def handle_message(event):
         line_bot_api.reply_message(
             event.reply_token, [
                 TextSendMessage(
-                    text='不好意思，我聽不太懂耶'
+                    text='不好意思，我聽不太懂耶! 想查詢今日運勢的話，請輸入您的星座'
                 )
             ]
         )
@@ -242,10 +253,33 @@ def handle_ask_zodiac_sign(event):
                     text="對不起，我聽不太懂耶\n 如果想看運勢的話請回 好 "
                 )
         )
-
+def get_feedback(stars):
+    if stars.find('★★★★★'):
+        message = TextSendMessage(
+                    text="太棒了～祝你一整天順利呦"
+                )
+    elif stars.find('★★★★☆'):
+        message = TextSendMessage(
+                    text="很不錯喔～今天一定能過得很好"
+                )
+    elif stars.find('★★★☆☆'):
+        message = TextSendMessage(
+                    text="只要努力一下，就會很好的！加油"
+                )
+    elif stars.find('★★☆☆☆'):
+        message = TextSendMessage(
+                    text="不要難過，明天一定會更好的"
+                )
+    elif stars.find('★☆☆☆☆'):
+        message = TextSendMessage(
+                    text="上面都是騙人的，不要難過"
+                )
+    return message
 import os
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
+    zodiac = parse_zodiac()
     app.run(host='0.0.0.0', port=port)
+    
 
 
