@@ -30,12 +30,11 @@ class parse_zodiac:
         self.result['work_cont'] = soup.find_all('p')[5].string # 財運
         self.result['wealth'] = soup.find_all('span')[3].string # 財運
         self.result['wealth_cont'] = soup.find_all('p')[7].string # 財運
-        
+   
         return self.result
    
-"""if __name__=='__main__':
+if __name__=='__main__':
     zodiac = parse_zodiac()
     zodiac.constellation(1)
-    print(zodiac.get_parse_result())
-    print(zodiac.result)
-"""
+    #print(zodiac.get_parse_result())
+    #print(zodiac.result)

@@ -34,8 +34,8 @@ app = Flask(__name__)
 line_bot_api = LineBotApi('Cl3jVd/y4GpkqurC/63xKqWYGWx9vtYMLArtyALsRUquhUyUS/jHaXif1Ua2XbfOJG197JBfdx3VesvwjCpQQeEsqTSfNmZOZPmnkViegy8zVxN6O9FSKrcNXqyrqsvTKlgTvZzoQkHd08pLyBs1QAdB04t89/1O/w1cDnyilFU=')
 # Channel Secret
 handler = WebhookHandler('f787f1305680c20fc61c962950fcfefd')
-zodiac_signs = ['牡羊', '金牛', '雙子', '巨蟹', '獅子', '處女', '天秤', '天蠍', '射手', '摩羯', '水瓶', '雙魚']
-
+zodiac_signs = ['牡羊', '金牛', '雙子', '巨蟹', '獅子', '處女', '天秤', '天蠍', '射手', '羯', '水瓶', '雙魚']
+zodiac_results = {'整體運勢': 'overview', '愛情運勢': 'love','事業學業運勢': 'work','財運運勢': 'wealth'}
 # 監聽所有來自 /callback 的 Post Request
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -75,21 +75,24 @@ def handle_message(event):
             
             return
 
-    
-    if text.find('整體運勢') != -1:
-        feedback = get_feedback(zodiac.result['overview'])
-        line_bot_api.reply_message(
-            event.reply_token, [
-                TextSendMessage(
-                    text = zodiac.result['overview']
-                ),
-                TextSendMessage(
-                    text=zodiac.result['overview_cont']
-                ),
-                feedback
-            ]
-        )
-    elif text.find('愛情運勢') != -1:
+    for key, value in zodiac_results.items():
+        if text.find(key) != -1:
+             
+            feedback = get_feedback(zodiac.result[value])
+            line_bot_api.reply_message(
+                event.reply_token, [
+                    TextSendMessage(
+                        text = zodiac.result[value]
+                    ),
+                    TextSendMessage(
+                        text=zodiac.result[value + '_cont']
+                    ),
+                    feedback[0],
+                    feedback[1],
+                ]
+            )
+            return
+    """elif text.find('愛情運勢') != -1:
         line_bot_api.reply_message(
             event.reply_token, [
                 TextSendMessage(
@@ -122,7 +125,8 @@ def handle_message(event):
                 )
             ]
         )
-    elif text == 'profile':
+    """
+    if text == 'profile':
         if isinstance(event.source, SourceUser):
             profile = line_bot_api.get_profile(event.source.user_id)
             line_bot_api.reply_message(
@@ -206,11 +210,12 @@ def handle_message(event):
             alt_text='ImageCarousel alt text', template=image_carousel_template)
         line_bot_api.reply_message(event.reply_token, template_message)
     elif text == 'image':
+        message = TextSendMessage(text="太棒了～祝你一整天順利呦")
         image_message = ImageSendMessage(
             original_content_url='https://images.pexels.com/photos/370799/pexels-photo-370799.jpeg?auto=compress&cs=tinysrgb&h=350',
             preview_image_url='https://images.pexels.com/photos/370799/pexels-photo-370799.jpeg?auto=compress&cs=tinysrgb&h=350'
         )   
-        line_bot_api.reply_message(event.reply_token, image_message)
+        line_bot_api.reply_message(event.reply_token, [message, image_message])
     elif text == 'imagemap':
         pass
 
@@ -254,27 +259,43 @@ def handle_ask_zodiac_sign(event):
                 )
         )
 def get_feedback(stars):
-    if stars.find('★★★★★'):
-        message = TextSendMessage(
-                    text="太棒了～祝你一整天順利呦"
-                )
-    elif stars.find('★★★★☆'):
-        message = TextSendMessage(
-                    text="很不錯喔～今天一定能過得很好"
-                )
-    elif stars.find('★★★☆☆'):
-        message = TextSendMessage(
-                    text="只要努力一下，就會很好的！加油"
-                )
-    elif stars.find('★★☆☆☆'):
-        message = TextSendMessage(
-                    text="不要難過，明天一定會更好的"
-                )
-    elif stars.find('★☆☆☆☆'):
-        message = TextSendMessage(
-                    text="上面都是騙人的，不要難過"
-                )
-    return message
+    if stars.find('★★★★★') != -1:
+        message = TextSendMessage(text="太棒了～祝你一整天順利呦")
+        image_message = ImageSendMessage(
+            original_content_url='https://image.ibb.co/nioggn/13132728.jpg',
+            preview_image_url='https://image.ibb.co/nioggn/13132728.jpg'
+        )  
+    elif stars.find('★★★★☆') != -1:
+        message = TextSendMessage(text="很不錯喔～今天一定能過得很好")
+        image_message = ImageSendMessage(
+            original_content_url='https://image.ibb.co/cRmOu7/23620976.jpg',
+            preview_image_url='https://image.ibb.co/cRmOu7/23620976.jpg'
+        )  
+    elif stars.find('★★★☆☆') != -1:
+        message = TextSendMessage(text="只要努力一下，就會很好的！加油")
+        image_message = ImageSendMessage(
+            original_content_url='https://image.ibb.co/n3rOu7/13132763.jpg',
+            preview_image_url='https://image.ibb.co/n3rOu7/13132763.jpg'
+        )  
+    elif stars.find('★★☆☆☆') != -1:
+        message = TextSendMessage(text="不要難過，明天一定會更好的")
+        image_message = ImageSendMessage(
+            original_content_url='https://image.ibb.co/bvQ57S/13132735.jpg',
+            preview_image_url='https://image.ibb.co/bvQ57S/13132735.jpg'
+        )  
+    elif stars.find('★☆☆☆☆') != -1:
+        message = TextSendMessage(text="上面都是騙人的，不要難過")
+        image_message = ImageSendMessage(
+            original_content_url='https://image.ibb.co/fFkGE7/23620974.jpg',
+            preview_image_url='https://image.ibb.co/fFkGE7/23620974.jpg'
+        ) 
+    else:
+        message = TextSendMessage(text="還想看下一個嗎～可以繼續點上面的按鈕喔")
+        image_message = ImageSendMessage(
+            original_content_url='https://image.ibb.co/hsuySS/13132741.jpg',
+            preview_image_url='https://image.ibb.co/hsuySS/13132741.jpg'
+        ) 
+    return [message, image_message]
 import os
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
