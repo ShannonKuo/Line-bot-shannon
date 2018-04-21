@@ -37,6 +37,7 @@ line_bot_api = LineBotApi('Cl3jVd/y4GpkqurC/63xKqWYGWx9vtYMLArtyALsRUquhUyUS/jHa
 handler = WebhookHandler('f787f1305680c20fc61c962950fcfefd')
 zodiac_signs = ['牡羊', '金牛', '雙子', '巨蟹', '獅子', '處女', '天秤', '天蠍', '射手', '羯', '水瓶', '雙魚']
 zodiac_results = {'整體運勢': 'overview', '愛情運勢': 'love','事業學業運勢': 'work','財運運勢': 'wealth'}
+
 # 監聽所有來自 /callback 的 Post Request
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -78,7 +79,6 @@ def handle_message(event):
 
     for key, value in zodiac_results.items():
         if text.find(key) != -1:
-             
             feedback = get_feedback(zodiac.result[value])
             line_bot_api.reply_message(
                 event.reply_token, [
@@ -143,7 +143,7 @@ def get_feedback(stars):
             preview_image_url='https://image.ibb.co/nioggn/13132728.jpg'
         )  
     elif stars.find('★★★★☆') != -1:
-        message = TextSendMessage(text="很不錯喔～今天一定能過得很好")
+        message = TextSendMessage(text="很不錯喔～今天一定能過得很棒")
         image_message = ImageSendMessage(
             original_content_url='https://image.ibb.co/cRmOu7/23620976.jpg',
             preview_image_url='https://image.ibb.co/cRmOu7/23620976.jpg'
@@ -173,6 +173,7 @@ def get_feedback(stars):
             preview_image_url='https://image.ibb.co/hsuySS/13132741.jpg'
         ) 
     return [message, image_message]
+
 import os
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
