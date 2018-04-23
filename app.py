@@ -32,9 +32,9 @@ from linebot.models import (
 app = Flask(__name__)
 
 # Channel Access Token
-line_bot_api = LineBotApi('9q7lPr4h4i/ypQ90Hy6DuH0jkdp5u6i94aQdyefwiS/fDsK9XCXBk25BJbLIs3hOzvij49V64FIHczNEGGBQn4LfZ8a2Rt3lDUOvjwKuZbSLZJlwqHfxkOWCj+vxb3uPUhxgNg55h14HEpaF+274FAdB04t89/1O/w1cDnyilFU=')
+line_bot_api = LineBotApi('ZBburgoF+ZXriFnSRvPsbMbNHK282xdCyYNMHaTue6DEMeIav/iGRgfQmTqwWho0I8kREDFomnII1h7awetQE7C8v8S2Q3WRe7QzEyd7+6OVUp8RIiK2OMDI8d6XpjgKRcnm35uaFHtAjVpk9fkcmQdB04t89/1O/w1cDnyilFU=')
 # Channel Secret
-handler = WebhookHandler('4b2fec6cc9da5c50b603bcfcd1039e52')
+handler = WebhookHandler('e1f2499a7251bc02b7296124020d9cbc')
 zodiac_signs = ['牡羊', '金牛', '雙子', '巨蟹', '獅子', '處女', '天秤', '天蠍', '射手', '羯', '水瓶', '雙魚']
 zodiac_results = {'整體運勢': 'overview', '愛情運勢': 'love','事業學業運勢': 'work','財運運勢': 'wealth'}
 
@@ -60,7 +60,9 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     text = event.message.text
-    
+
+    #if the user insert his zodiac sign
+    #display a menu for them to choose the kind of fortune they want
     for i, sign in enumerate(zodiac_signs):
         if text.find(sign) != -1:
             parse_result = zodiac.constellation(i) 
@@ -77,6 +79,8 @@ def handle_message(event):
             
             return
 
+    #if the user choose to see one of the fortune
+    #display the content & also gives some feedbacks.
     for key, value in zodiac_results.items():
         if text.find(key) != -1:
             feedback = get_feedback(zodiac.result[value])
@@ -93,7 +97,8 @@ def handle_message(event):
                 ]
             )
             return
-    
+    #if the user don't want to see their fortune today
+    #say goodbye
     if text.find('不想') != -1:
         line_bot_api.reply_message(
                 event.reply_token, [
@@ -107,6 +112,7 @@ def handle_message(event):
                 ]
                 
             )
+    #give the user some instructions
     elif text.find('想') != -1:
         line_bot_api.reply_message(
                 event.reply_token, [
@@ -115,6 +121,7 @@ def handle_message(event):
                     )
                 ]
             )
+    
     else:
         line_bot_api.reply_message(
             event.reply_token, [
@@ -124,7 +131,7 @@ def handle_message(event):
             ]
         )
 
-
+#random send a sticker to the user if they send a sticker message
 @handler.add(MessageEvent, message=StickerMessage)
 def handle_sticker_message(event):
     random_num = random.randint(180, 259)
@@ -135,6 +142,7 @@ def handle_sticker_message(event):
             sticker_id=str(random_num))
     )
 
+#give different feedbacks according to the number of the stars
 def get_feedback(stars):
     if stars.find('★★★★★') != -1:
         message = TextSendMessage(text="太棒了～祝你一整天順利呦")

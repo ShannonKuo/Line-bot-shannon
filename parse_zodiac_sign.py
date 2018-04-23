@@ -8,6 +8,8 @@ import datetime
 
 now = datetime.datetime.now()
 
+#parse the information from http://astro.click108.com.tw
+#and save the content to a dictionary
 class parse_zodiac:
     def __init__(self):
         self.result = {}
