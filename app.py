@@ -32,9 +32,9 @@ from linebot.models import (
 app = Flask(__name__)
 
 # Channel Access Token
-line_bot_api = LineBotApi('Cl3jVd/y4GpkqurC/63xKqWYGWx9vtYMLArtyALsRUquhUyUS/jHaXif1Ua2XbfOJG197JBfdx3VesvwjCpQQeEsqTSfNmZOZPmnkViegy8zVxN6O9FSKrcNXqyrqsvTKlgTvZzoQkHd08pLyBs1QAdB04t89/1O/w1cDnyilFU=')
+line_bot_api = LineBotApi('9q7lPr4h4i/ypQ90Hy6DuH0jkdp5u6i94aQdyefwiS/fDsK9XCXBk25BJbLIs3hOzvij49V64FIHczNEGGBQn4LfZ8a2Rt3lDUOvjwKuZbSLZJlwqHfxkOWCj+vxb3uPUhxgNg55h14HEpaF+274FAdB04t89/1O/w1cDnyilFU=')
 # Channel Secret
-handler = WebhookHandler('f787f1305680c20fc61c962950fcfefd')
+handler = WebhookHandler('4b2fec6cc9da5c50b603bcfcd1039e52')
 zodiac_signs = ['牡羊', '金牛', '雙子', '巨蟹', '獅子', '處女', '天秤', '天蠍', '射手', '羯', '水瓶', '雙魚']
 zodiac_results = {'整體運勢': 'overview', '愛情運勢': 'love','事業學業運勢': 'work','財運運勢': 'wealth'}
 
